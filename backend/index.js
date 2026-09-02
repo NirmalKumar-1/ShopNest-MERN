@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const connectDB = require('../../shopnest-ecom-MERN-master/backend/config/db');
+const connectDB = require('./config/db');
 const path = require('path');
 
 dotenv.config();
@@ -17,11 +17,11 @@ app.use(cors({
 
 app.use(express.json());
 
-app.use('/api/auth', require('../../shopnest-ecom-MERN-master/backend/routes/authRoutes'));
-app.use('/api/products', require('../../shopnest-ecom-MERN-master/backend/routes/productRoutes'));
-app.use('/api/orders', require('../../shopnest-ecom-MERN-master/backend/routes/orderRoutes'));
-app.use('/api/payment', require('../../shopnest-ecom-MERN-master/backend/routes/paymentRoutes'));
-app.use('/api/analytics', require('../../shopnest-ecom-MERN-master/backend/routes/analyticsRoutes'));
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/products', require('./routes/productRoutes'));
+app.use('/api/orders', require('./routes/orderRoutes'));
+app.use('/api/payment', require('./routes/paymentRoutes'));
+app.use('/api/analytics', require('./routes/analyticsRoutes'));
 
 // Serve frontend in production
 if (process.env.NODE_ENV === 'production') {
