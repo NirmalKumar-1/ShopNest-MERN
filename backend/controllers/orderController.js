@@ -19,25 +19,24 @@ const addOrderItems = async (req, res) => {
 
     const createdOrder = await order.save();
 
-      // Send Order Confirmation Email
-      const message = `
-        <h2>Order Confirmation</h2>
-        <p>Hello ${req.user.name},</p>
-        <p>Your order has been successfully placed! Order ID: <strong>${createdOrder._id}</strong></p>
-        <p>Total Amount Paid: $${totalAmount.toFixed(2)}</p>
-        <p>It will be shipped to: ${address.street}, ${address.city}</p>
-        <p>Thank you for shopping with ShopNest!</p>
-      `;
+    const message = `
+      <h2>Order Confirmation</h2>
+      <p>Hello ${req.user.name},</p>
+      <p>Your order has been successfully placed! Order ID: <strong>${createdOrder._id}</strong></p>
+      <p>Total Amount Paid: $${totalAmount.toFixed(2)}</p>
+      <p>It will be shipped to: ${address.street}, ${address.city}</p>
+      <p>Thank you for shopping with ShopNest!</p>
+    `;
 
-      await sendEmail({
-        email: req.user.email,
-        subject: 'ShopNest - Order Confirmation',
-        message
-      });
+    await sendEmail({
+      email: req.user.email,
+      subject: 'ShopNest - Order Confirmation',
+      message
+    });
 
-      res.status(201).json(createdOrder);
-    }
+    res.status(201).json(createdOrder);
   } catch (error) {
+    console.error('Add Order Error:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -53,7 +52,9 @@ const getMyOrders = async (req, res) => {
 
 const getOrders = async (req, res) => {
   try {
-    const orders = await Order.find({}).populate('user', 'id name');
+    const orders = await Order.find({})
+      .populate('user', 'id name');
+
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -63,9 +64,12 @@ const getOrders = async (req, res) => {
 const updateOrderStatus = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
+
     if (order) {
       order.status = req.body.status || order.status;
+
       const updatedOrder = await order.save();
+
       res.json(updatedOrder);
     } else {
       res.status(404).json({ message: 'Order not found' });
@@ -75,4 +79,9 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-module.exports = { addOrderItems, getMyOrders, getOrders, updateOrderStatus };
+module.exports = {
+  addOrderItems,
+  getMyOrders,
+  getOrders,
+  updateOrderStatus
+};
