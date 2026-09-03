@@ -4,17 +4,20 @@ const sendEmail = require('../utils/sendEmail');
 const addOrderItems = async (req, res) => {
   try {
     const { items, totalAmount, address, paymentId } = req.body;
-    if (items && items.length === 0) {
+
+    if (!items || items.length === 0) {
       return res.status(400).json({ message: 'No order items' });
-    } else {
-      const order = new Order({
-        userId: req.user._id,
-        items,
-        totalAmount,
-        address,
-        paymentId
-      });
-      const createdOrder = await order.save();
+    }
+
+    const order = new Order({
+      user: req.user._id,
+      items,
+      totalAmount,
+      address,
+      paymentId
+    });
+
+    const createdOrder = await order.save();
 
       // Send Order Confirmation Email
       const message = `
@@ -41,7 +44,7 @@ const addOrderItems = async (req, res) => {
 
 const getMyOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ userId: req.user._id });
+    const orders = await Order.find({ user: req.user._id });
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -50,7 +53,7 @@ const getMyOrders = async (req, res) => {
 
 const getOrders = async (req, res) => {
   try {
-    const orders = await Order.find({}).populate('userId', 'id name');
+    const orders = await Order.find({}).populate('user', 'id name');
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: error.message });
